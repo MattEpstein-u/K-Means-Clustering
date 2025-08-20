@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Means Clustering Visualization</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>K-Means Clustering</h1>
+    <div id="controls">
+        <label for="k-slider">Number of Clusters (K): <span id="k-value-display">3</span></label>
+        <input type="range" id="k-slider" value="3" min="2" max="10">
+        <label for="num-points">Number of Points:</label>
+        <input type="number" id="num-points" value="100" min="10">
+        <button id="generate-data">Generate Data</button>
+        <button id="start-algorithm">Start</button>
+        <button id="next-step">Next Step</button>
+    </div>
+    <p id="iteration-info">Iteration: 0</p>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
