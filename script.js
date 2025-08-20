@@ -170,11 +170,11 @@ function resetClustering() {
 
 function initializeCentroids() {
     centroids = [];
-    const pointsCopy = [...points];
     for (let i = 0; i < k; i++) {
-        const index = Math.floor(Math.random() * pointsCopy.length);
-        centroids.push({ x: pointsCopy[index].x, y: pointsCopy[index].y });
-        pointsCopy.splice(index, 1); // Ensure centroids are unique
+        centroids.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height
+        });
     }
 }
 
