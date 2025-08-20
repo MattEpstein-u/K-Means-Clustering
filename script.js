@@ -60,7 +60,15 @@ kSlider.addEventListener('change', () => {
 });
 
 numPointsInput.addEventListener('change', () => {
-    numPoints = parseInt(numPointsInput.value);
+    let value = parseInt(numPointsInput.value);
+    if (isNaN(value) || value < 10) {
+        value = 10;
+    } else if (value > 1000) {
+        value = 1000;
+    }
+    numPointsInput.value = value;
+    numPoints = value;
+
     if (points.length > 0) {
         reset();
         generateData();
