@@ -1,35 +1,63 @@
 body {
     font-family: sans-serif;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     margin: 0;
     background-color: #f0f0f0;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+#ui-panel {
+    width: 250px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#canvas-panel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
 h1 {
-    margin-top: 20px;
+    margin-top: 0;
+    text-align: center;
     color: #333;
 }
 
 #controls {
-    margin: 20px;
     display: flex;
-    gap: 10px;
-    align-items: center;
+    flex-direction: column;
+    gap: 15px;
 }
 
 #controls label {
     font-size: 14px;
 }
 
-#controls input {
-    width: 60px;
+#controls input[type="range"] {
+    width: 100%;
+}
+
+#controls input[type="number"] {
+    width: 80px;
     padding: 5px;
 }
 
 #controls button {
-    padding: 8px 15px;
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
     background-color: #007bff;
@@ -47,15 +75,17 @@ h1 {
     cursor: not-allowed;
 }
 
-
 canvas {
     border: 1px solid #ccc;
     background-color: white;
     border-radius: 5px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #iteration-info {
-    margin-top: 10px;
+    margin-bottom: 10px;
     font-size: 16px;
     font-weight: bold;
+    text-align: center;
 }
