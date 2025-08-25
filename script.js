@@ -302,68 +302,79 @@ function calculateElbowPlot() {
     const minK = parseInt(kSlider.min);
     const maxK = parseInt(kSlider.max);
     for (let testK = minK; testK <= maxK; testK++) {
-        // Deep copy points
-        const testPoints = points.map(p => ({...p}));
-        // Run K-Means for this k
-        let testCentroids = [];
-        for (let i = 0; i < testK; i++) {
-            testCentroids.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height
-            });
-        }
-        let testClusters = Array.from({ length: testK }, () => []);
-        let moved = true;
-        let iter = 0;
-        while (moved && iter < 1000) {
-            // Assign points
-            testClusters = Array.from({ length: testK }, () => []);
-            for (const point of testPoints) {
-                let minDist = Infinity;
-                let closest = -1;
-                for (let i = 0; i < testK; i++) {
-                    const dist = distance(point, testCentroids[i]);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        closest = i;
-                    }
-                }
-                point.cluster = closest;
-                testClusters[closest].push(point);
-            }
-            // Update centroids
-            moved = false;
+        let bestInertia = Infinity;
+        let bestPoints = null;
+        let bestCentroids = null;
+        // Try 8 different initializations
+        for (let trial = 0; trial < 8; trial++) {
+            // Deep copy points
+            const testPoints = points.map(p => ({...p}));
+            // Random initial centroids
+            let testCentroids = [];
             for (let i = 0; i < testK; i++) {
-                if (testClusters[i].length > 0) {
-                    const sumX = testClusters[i].reduce((sum, p) => sum + p.x, 0);
-                    const sumY = testClusters[i].reduce((sum, p) => sum + p.y, 0);
-                    const newCentroid = {
-                        x: sumX / testClusters[i].length,
-                        y: sumY / testClusters[i].length
-                    };
-                    if (distance(testCentroids[i], newCentroid) > 0.0001) {
+                testCentroids.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height
+                });
+            }
+            let testClusters = Array.from({ length: testK }, () => []);
+            let moved = true;
+            let iter = 0;
+            while (moved && iter < 1000) {
+                // Assign points
+                testClusters = Array.from({ length: testK }, () => []);
+                for (const point of testPoints) {
+                    let minDist = Infinity;
+                    let closest = -1;
+                    for (let i = 0; i < testK; i++) {
+                        const dist = distance(point, testCentroids[i]);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closest = i;
+                        }
+                    }
+                    point.cluster = closest;
+                    testClusters[closest].push(point);
+                }
+                // Update centroids
+                moved = false;
+                for (let i = 0; i < testK; i++) {
+                    if (testClusters[i].length > 0) {
+                        const sumX = testClusters[i].reduce((sum, p) => sum + p.x, 0);
+                        const sumY = testClusters[i].reduce((sum, p) => sum + p.y, 0);
+                        const newCentroid = {
+                            x: sumX / testClusters[i].length,
+                            y: sumY / testClusters[i].length
+                        };
+                        if (distance(testCentroids[i], newCentroid) > 0.0001) {
+                            moved = true;
+                        }
+                        testCentroids[i] = newCentroid;
+                    } else {
+                        // Reinitialize centroid to a random data point
+                        const randPoint = testPoints[Math.floor(Math.random() * testPoints.length)];
+                        testCentroids[i] = { x: randPoint.x, y: randPoint.y };
                         moved = true;
                     }
-                    testCentroids[i] = newCentroid;
-                } else {
-                    // Reinitialize centroid to a random data point
-                    const randPoint = testPoints[Math.floor(Math.random() * testPoints.length)];
-                    testCentroids[i] = { x: randPoint.x, y: randPoint.y };
-                    moved = true;
                 }
+                iter++;
             }
-            iter++;
+            // Calculate inertia
+            let inertia = 0;
+            for (const point of testPoints) {
+                inertia += Math.pow(distance(point, testCentroids[point.cluster]), 2);
+            }
+            // Keep the best clustering
+            if (inertia < bestInertia) {
+                bestInertia = inertia;
+                bestPoints = testPoints.map(p => ({...p}));
+                bestCentroids = testCentroids.map(c => ({...c}));
+            }
         }
-        // Calculate inertia
-        let inertia = 0;
-        for (const point of testPoints) {
-            inertia += Math.pow(distance(point, testCentroids[point.cluster]), 2);
-        }
-        elbowData.push({ k: testK, inertia });
-        // Save clustering for this k
+        elbowData.push({ k: testK, inertia: bestInertia });
         elbowClusterings[testK] = {
-            points: testPoints.map(p => ({...p})),
-            centroids: testCentroids.map(c => ({...c}))
+            points: bestPoints,
+            centroids: bestCentroids
         };
     }
 }
