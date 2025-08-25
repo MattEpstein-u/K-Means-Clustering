@@ -315,7 +315,7 @@ function calculateElbowPlot() {
         let testClusters = Array.from({ length: testK }, () => []);
         let moved = true;
         let iter = 0;
-        while (moved && iter < 100) {
+        while (moved && iter < 1000) {
             // Assign points
             testClusters = Array.from({ length: testK }, () => []);
             for (const point of testPoints) {
@@ -341,10 +341,15 @@ function calculateElbowPlot() {
                         x: sumX / testClusters[i].length,
                         y: sumY / testClusters[i].length
                     };
-                    if (distance(testCentroids[i], newCentroid) > 0.1) {
+                    if (distance(testCentroids[i], newCentroid) > 0.0001) {
                         moved = true;
                     }
                     testCentroids[i] = newCentroid;
+                } else {
+                    // Reinitialize centroid to a random data point
+                    const randPoint = testPoints[Math.floor(Math.random() * testPoints.length)];
+                    testCentroids[i] = { x: randPoint.x, y: randPoint.y };
+                    moved = true;
                 }
             }
             iter++;
